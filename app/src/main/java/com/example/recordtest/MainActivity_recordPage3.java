@@ -154,6 +154,11 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(MainActivity_recordPage3.this, "帳戶創建成功", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent();
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.setClass(MainActivity_recordPage3.this  , MainActivity.class);
+                startActivity(intent);
             }
         });
     }

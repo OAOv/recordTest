@@ -32,8 +32,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.UUID;
-
 
 public class MainActivity_recordPage extends AppCompatActivity {
 
@@ -159,6 +157,8 @@ public class MainActivity_recordPage extends AppCompatActivity {
                     Toast.makeText(MainActivity_recordPage.this, "上傳中...", Toast.LENGTH_SHORT).show();
                     save();
                     fileUpload();
+                    File file = new File(pathSave);
+                    file.delete();
                 }
             }
         });
@@ -341,7 +341,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(MainActivity_recordPage.this, "帳戶創建成功", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity_recordPage.this, "帳戶創建成功", Toast.LENGTH_SHORT).show();
         }
 
         @Override

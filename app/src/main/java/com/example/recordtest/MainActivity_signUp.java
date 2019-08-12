@@ -124,7 +124,6 @@ public class MainActivity_signUp extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             if(result.equals("00")) {
-                //Toast.makeText(MainActivity_signUp.this, "帳戶創建成功", Toast.LENGTH_SHORT).show();
                 Bundle bundle = new Bundle();
                 bundle.putString("account", str_account);
                 bundle.putString("password", str_password);
