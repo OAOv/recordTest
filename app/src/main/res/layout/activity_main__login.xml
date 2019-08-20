@@ -15,9 +15,9 @@
         android:textSize="30sp" />
 
     <Button
+        android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnLogin"
         android:text="登入"
         android:textSize="30sp" />
 </LinearLayout>

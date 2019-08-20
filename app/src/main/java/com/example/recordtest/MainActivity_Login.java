@@ -2,6 +2,7 @@ package com.example.recordtest;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
@@ -47,9 +48,11 @@ public class MainActivity_Login extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        btnLogin.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
                         startRecord();
                         return true;
                     case MotionEvent.ACTION_UP:
+                        btnLogin.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
                         stopRecord();
                         fileUpload();
                         break;
@@ -96,8 +99,8 @@ public class MainActivity_Login extends AppCompatActivity {
                     String hyphens = "--";
                     String boundary = "*****";
                     File file = new File(pathSave);
-                    URL url = new URL("http://192.168.43.181/recordUpdate/loginUpload.php");
-                    //URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
+                    //URL url = new URL("http://192.168.43.181/recordUpdate/loginUpload.php");
+                    URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);

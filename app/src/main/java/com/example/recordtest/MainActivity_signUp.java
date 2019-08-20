@@ -50,8 +50,8 @@ public class MainActivity_signUp extends AppCompatActivity {
                 }
                 else if(str_password.equals(str_password2) && !str_account.equals("") && !str_nickname.equals("")) {
                     //Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT).show();
-                    checkAccount();
-                    //save();
+                    //checkAccount();
+                    save();
                 }
                 else if (!str_password.equals(str_password2)){
                     Toast.makeText(getApplication(),"密碼不一致，請重新輸入",Toast.LENGTH_SHORT).show();
@@ -60,9 +60,9 @@ public class MainActivity_signUp extends AppCompatActivity {
         });
     }
 
-    public void checkAccount() {
+    public void save() {
         BackgroundTask bt = new BackgroundTask();
-        bt.execute(str_account);
+        bt.execute(str_account, str_password, str_nickname);
     }
 
     class BackgroundTask extends AsyncTask<String, Void, String> {
@@ -72,6 +72,8 @@ public class MainActivity_signUp extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String result = "error!";
             final String ac = params[0];
+            final String pw = params[1];
+            final String nn = params[2];
 
             try {
                 URL url = new URL(my_url);
@@ -82,7 +84,9 @@ public class MainActivity_signUp extends AppCompatActivity {
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
 
-                String newData = URLEncoder.encode("account", "UTF-8") + "=" + URLEncoder.encode(ac, "UTF-8");
+                String newData = URLEncoder.encode("account", "UTF-8") + "=" + URLEncoder.encode(ac, "UTF-8") + "&";
+                newData += URLEncoder.encode("password", "UTF-8") + "=" + URLEncoder.encode(pw, "UTF-8") + "&";
+                newData += URLEncoder.encode("nickname", "UTF-8") + "=" + URLEncoder.encode(nn, "UTF-8");
 
                 bw.write(newData);
                 bw.flush();
@@ -117,8 +121,8 @@ public class MainActivity_signUp extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            my_url = "http://192.168.43.181/recordUpdate/checkAccount.php";
-            //my_url = "http://speech.cse.ttu.edu.tw/recordUpdate/signUp.php";
+            //my_url = "http://192.168.43.181/recordUpdate/checkAccount.php";
+            my_url = "http://140.129.25.230/recordUpdate/signUp.php";
         }
 
         @Override

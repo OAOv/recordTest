@@ -34,12 +34,15 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     Button btnRecord, btnStopRecord, btnPlay, btnStop, btnUpload, btnNextStep;
+    Bundle bundle;
     String account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_record_page2);
+
+        bundle = getIntent().getExtras();
 
         String testStr = randomSentence();
         TextView textView = (TextView)findViewById(R.id.testString);
@@ -55,7 +58,13 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
         btnUpload = (Button)findViewById(R.id.btnUpload);
         btnNextStep = (Button)findViewById(R.id.btnNextStep);
 
-        Bundle bundle = getIntent().getExtras();
+        btnRecord.setEnabled(true);
+        btnStopRecord.setEnabled(false);
+        btnPlay.setEnabled(false);
+        btnStop.setEnabled(false);
+        btnUpload.setEnabled(false);
+        btnNextStep.setEnabled(false);
+
         account = bundle.getString("account");
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +86,7 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                     btnStopRecord.setEnabled(true);
                     btnPlay.setEnabled(false);
                     btnStop.setEnabled(false);
+                    btnUpload.setEnabled(false);
                     btnNextStep.setEnabled(false);
 
                     Toast.makeText(MainActivity_recordPage2.this, "錄製中....", Toast.LENGTH_SHORT).show();
@@ -95,6 +105,7 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
             }
         });
@@ -106,6 +117,7 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(false);
                 btnStop.setEnabled(true);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
                 mediaPlayer = new MediaPlayer();
@@ -128,6 +140,7 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                 btnStopRecord.setEnabled(true);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
 
@@ -154,9 +167,6 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("account", account);
-
                 Intent intent = new Intent();
                 intent.putExtras(bundle);
                 intent.setClass(MainActivity_recordPage2.this  , MainActivity_recordPage3.class);
@@ -174,8 +184,8 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                     String hyphens = "--";
                     String boundary = "*****";
                     File file = new File(pathSave);
-                    URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
-                    //URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
+                    // url = new URL("http://192.168.43.181/recordUpdate/update.php");
+                    URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -208,6 +218,7 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
                         ds.close();
+                        conn.disconnect();
                     }
                 }
                 catch (MalformedURLException e) {
@@ -216,6 +227,9 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                File file = new File(pathSave);
+                file.delete();
             }
         }).start();
     }
@@ -249,7 +263,6 @@ public class MainActivity_recordPage2 extends AppCompatActivity {
     }
 
     /////////////////////////////////
-
     ////////////////////////////////
 
     private boolean checkPermissionFromDevice() {

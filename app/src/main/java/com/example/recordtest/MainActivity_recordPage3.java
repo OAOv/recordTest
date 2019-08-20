@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -17,14 +18,20 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 public class MainActivity_recordPage3 extends AppCompatActivity {
 
@@ -34,12 +41,15 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     Button btnRecord, btnStopRecord, btnPlay, btnStop, btnUpload, btnNextStep;
+    Bundle bundle;
     String account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_record_page2);
+        setContentView(R.layout.activity_main_record_page3);
+
+        bundle = getIntent().getExtras();
 
         String testStr = randomSentence();
         TextView textView = (TextView)findViewById(R.id.testString);
@@ -55,7 +65,13 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
         btnUpload = (Button)findViewById(R.id.btnUpload);
         btnNextStep = (Button)findViewById(R.id.btnNextStep);
 
-        Bundle bundle = getIntent().getExtras();
+        btnRecord.setEnabled(true);
+        btnStopRecord.setEnabled(false);
+        btnPlay.setEnabled(false);
+        btnStop.setEnabled(false);
+        btnUpload.setEnabled(false);
+        btnNextStep.setEnabled(false);
+
         account = bundle.getString("account");
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
@@ -77,6 +93,7 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                     btnStopRecord.setEnabled(true);
                     btnPlay.setEnabled(false);
                     btnStop.setEnabled(false);
+                    btnUpload.setEnabled(false);
                     btnNextStep.setEnabled(false);
 
                     Toast.makeText(MainActivity_recordPage3.this, "錄製中....", Toast.LENGTH_SHORT).show();
@@ -95,6 +112,7 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
             }
         });
@@ -106,6 +124,7 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(false);
                 btnStop.setEnabled(true);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
                 mediaPlayer = new MediaPlayer();
@@ -128,6 +147,7 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                 btnStopRecord.setEnabled(true);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
 
@@ -171,9 +191,8 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                     String end = "\r\n";
                     String hyphens = "--";
                     String boundary = "*****";
-                    File file = new File(pathSave);
-                    URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
-                    //URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
+                    //URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
+                    URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -185,9 +204,11 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                     conn.setRequestProperty("Connection", "Keep-Alive");
                     conn.setRequestProperty("Content-Type", "multipart/form-data;boundary="+boundary);
 
+                    DataOutputStream ds = new DataOutputStream(conn.getOutputStream());
+
+                    File file = new File(pathSave);
                     Log.e(TAG, file.toString());
                     if(file != null) {
-                        DataOutputStream ds = new DataOutputStream(conn.getOutputStream());
                         ds.writeBytes(hyphens + boundary + end);
                         ds.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""+pathSave.substring(pathSave.lastIndexOf("/"), pathSave.length())+"\""+end);
                         ds.writeBytes(end);
@@ -203,9 +224,9 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                         ds.writeBytes(end);
                         ds.writeBytes(hyphens + boundary + hyphens + end);
                         ds.flush();
+                        ds.close();
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
-                        ds.close();
                     }
                 }
                 catch (MalformedURLException e) {
@@ -214,6 +235,9 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                File file = new File(pathSave);
+                file.delete();
             }
         }).start();
     }
@@ -247,7 +271,6 @@ public class MainActivity_recordPage3 extends AppCompatActivity {
     }
 
     /////////////////////////////////
-
     ////////////////////////////////
 
     private boolean checkPermissionFromDevice() {

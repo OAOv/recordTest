@@ -41,12 +41,15 @@ public class MainActivity_recordPage extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     Button btnRecord, btnStopRecord, btnPlay, btnStop, btnUpload, btnNextStep;
+    Bundle bundle;
     String account, password, nickname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_record_page);
+
+        bundle = getIntent().getExtras();
 
         String testStr = randomSentence();
         TextView textView = (TextView)findViewById(R.id.testString);
@@ -62,10 +65,17 @@ public class MainActivity_recordPage extends AppCompatActivity {
         btnUpload = (Button)findViewById(R.id.btnUpload);
         btnNextStep = (Button)findViewById(R.id.btnNextStep);
 
-        Bundle bundle = getIntent().getExtras();
+        btnRecord.setEnabled(true);
+        btnStopRecord.setEnabled(false);
+        btnPlay.setEnabled(false);
+        btnStop.setEnabled(false);
+        btnUpload.setEnabled(false);
+        btnNextStep.setEnabled(false);
+
         account = bundle.getString("account");
         password = bundle.getString("password");
         nickname = bundle.getString("nickname");
+
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,6 +96,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                     btnStopRecord.setEnabled(true);
                     btnPlay.setEnabled(false);
                     btnStop.setEnabled(false);
+                    btnUpload.setEnabled(false);
                     btnNextStep.setEnabled(false);
 
                     Toast.makeText(MainActivity_recordPage.this, "錄製中....", Toast.LENGTH_SHORT).show();
@@ -100,10 +111,12 @@ public class MainActivity_recordPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mediaRecorder.stop();
+
                 btnRecord.setEnabled(true);
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
             }
         });
@@ -115,6 +128,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 btnStopRecord.setEnabled(false);
                 btnPlay.setEnabled(false);
                 btnStop.setEnabled(true);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
                 mediaPlayer = new MediaPlayer();
@@ -137,6 +151,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 btnStopRecord.setEnabled(true);
                 btnPlay.setEnabled(true);
                 btnStop.setEnabled(false);
+                btnUpload.setEnabled(true);
                 btnNextStep.setEnabled(false);
 
 
@@ -155,10 +170,8 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
                 if(pathSave != null && pathSave != "") {
                     Toast.makeText(MainActivity_recordPage.this, "上傳中...", Toast.LENGTH_SHORT).show();
-                    save();
+                    //save();
                     fileUpload();
-                    File file = new File(pathSave);
-                    file.delete();
                 }
             }
         });
@@ -166,9 +179,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString("account", account);
-
                 Intent intent = new Intent();
                 intent.putExtras(bundle);
                 intent.setClass(MainActivity_recordPage.this  , MainActivity_recordPage2.class);
@@ -186,8 +196,8 @@ public class MainActivity_recordPage extends AppCompatActivity {
                     String hyphens = "--";
                     String boundary = "*****";
                     File file = new File(pathSave);
-                    URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
-                    //URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
+                    //URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
+                    URL url = new URL("http://140.129.25.230/recordUpdate/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -217,22 +227,16 @@ public class MainActivity_recordPage extends AppCompatActivity {
                         ds.writeBytes(end);
                         ds.writeBytes(hyphens + boundary + hyphens + end);
                         ds.flush();
+                        ds.close();
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
+                        conn.disconnect();
+
                     /*
                                     作者：安卓小农民
                                     来源：CSDN
                                     原文：https://blog.csdn.net/Tomtwo/article/details/51721811
                                     版权声明：本文为博主原创文章，转载请附上博文链接！*/
-
-                        /*InputStream is = conn.getInputStream();
-                        InputStreamReader isr = new InputStreamReader(is, "utf-8");
-                        BufferedReader br = new BufferedReader(isr);
-                        String result = br.readLine();
-
-                        //Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-                        is.close();*/
-                        ds.close();
                     }
                 }
                 catch (MalformedURLException e) {
@@ -241,6 +245,9 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                File file = new File(pathSave);
+                file.delete();
             }
         }).start();
     }
@@ -281,7 +288,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
     class BackgroundTask extends AsyncTask<String, Void, String> {
         String my_url;
-
         @Override
         protected String doInBackground(String... params) {
             String result = "error!";
@@ -335,13 +341,13 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            my_url = "http://192.168.43.181/recordUpdate/signUp.php";
-            //my_url = "http://speech.cse.ttu.edu.tw/recordUpdate/signUp.php";
+            //my_url = "http://192.168.43.181/recordUpdate/signUp.php";
+            my_url = "http://140.129.25.230/recordUpdate/signUp.php";
         }
 
         @Override
         protected void onPostExecute(String result) {
-            //Toast.makeText(MainActivity_recordPage.this, "帳戶創建成功", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity_recordPage.this, result, Toast.LENGTH_SHORT).show();
         }
 
         @Override
