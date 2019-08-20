@@ -49,8 +49,6 @@ public class MainActivity_signUp extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "不能為空", Toast.LENGTH_SHORT).show();
                 }
                 else if(str_password.equals(str_password2) && !str_account.equals("") && !str_nickname.equals("")) {
-                    //Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT).show();
-                    //checkAccount();
                     save();
                 }
                 else if (!str_password.equals(str_password2)){

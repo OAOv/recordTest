@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -37,6 +38,10 @@ public class MainActivity_Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__login);
+
+        String testStr = "\n" + randomSentence() + "\n";
+        TextView textView = (TextView)findViewById(R.id.randomString);
+        textView.setText(testStr);
 
         btnLogin = (Button)findViewById(R.id.btnLogin);
 
@@ -100,7 +105,7 @@ public class MainActivity_Login extends AppCompatActivity {
                     String boundary = "*****";
                     File file = new File(pathSave);
                     //URL url = new URL("http://192.168.43.181/recordUpdate/loginUpload.php");
-                    URL url = new URL("http://speech.cse.ttu.edu.tw/recordUpdate/update.php");   //school's server
+                    URL url = new URL("http://140.129.25.230/recordUpdate/loginUpload.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -133,8 +138,7 @@ public class MainActivity_Login extends AppCompatActivity {
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
                         ds.close();
-
-                        file.delete();
+                        conn.disconnect();
                     }
                 }
                 catch (MalformedURLException e) {
@@ -143,6 +147,9 @@ public class MainActivity_Login extends AppCompatActivity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
+
+                File file = new File(pathSave);
+                file.delete();
             }
         }).start();
     }
@@ -154,10 +161,41 @@ public class MainActivity_Login extends AppCompatActivity {
         }, REQUEST_PERMISSION_CODE);
     }
 
+
     private boolean checkPermissionFromDevice() {
         int write_external_storage_result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         int record_audio_result = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO);
         return write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
                 record_audio_result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    ///////////////////////////
+
+    public static String randomSentence(){
+
+
+        String[] nounsPosition={"森林", "銀河", "城市" ,"教室", "學校", "公司", "遊樂園", "草地", "公園", "星空", "音樂廳"};
+        String[] nonuTime = {"黑夜", "早晨", "正午", "凌晨", "清晨", "半夜", "午後"};
+        String[] nounsN={"小鳥", "斑馬", "貓咪", "小狗", "音樂", "小提琴", "鋼琴", "長笛", "單簧管", "雲彩", "金魚"};
+        String[] articles={"這些", "有著", "一些", "一片", "任何", "任意", "存在", "那些", "沒有", "失去", "一群", "這裡有", "那裡有"};
+        String[] articlesIng = {"身在", "待在", "漫步在", "睡在", "醒來在"};
+        String[] verbs={ "跑", "走", "跳", "飛" ,"越", "游", "發射", "穿", "吸引", "排斥"};
+        String[] prepositions={ "向", "來", "過", "上" ,"下", "到", "去"};
+
+        int  rNounPosition=(int)(Math.random() * 11);
+        int  rNounTime=(int)(Math.random() * 7);
+        int  rNounN=(int)(Math.random() * 11);
+
+        int  rArticles=(int)(Math.random() * 13);
+        int  rArticleIng=(int)(Math.random() * 4);
+
+        int  rVerb=(int)(Math.random() * 10);
+        int  rPrepostion=(int)(Math.random() * 7);
+
+
+        String randomSentence = articlesIng[rArticleIng] + nonuTime[rNounTime] + articles[rArticles] + nounsN[rNounN] +
+                verbs[rVerb] + prepositions[rPrepostion] + nounsPosition[rNounPosition];
+
+        return randomSentence;
     }
 }
