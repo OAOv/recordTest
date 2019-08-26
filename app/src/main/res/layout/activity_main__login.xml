@@ -11,6 +11,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="輸入帳戶"
+        android:textSize="30sp" />
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/userAccount"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:inputType="text" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="長按登入進行語者辨識"
         android:textSize="30sp" />
 
@@ -27,4 +41,8 @@
         android:layout_height="wrap_content"
         android:text="登入"
         android:textSize="30sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 </LinearLayout>

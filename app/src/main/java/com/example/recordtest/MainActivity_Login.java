@@ -14,7 +14,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -31,6 +33,8 @@ public class MainActivity_Login extends AppCompatActivity {
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
     String pathSave = "";
+    EditText userAccount;
+    String str_account = "";
     MediaRecorder mediaRecorder;
     Button btnLogin;
 
@@ -54,22 +58,34 @@ public class MainActivity_Login extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         btnLogin.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
-                        startRecord();
+                        if (startRecord() == false)
+                            Toast.makeText(MainActivity_Login.this, "請輸入帳戶", Toast.LENGTH_SHORT).show();
                         return true;
                     case MotionEvent.ACTION_UP:
                         btnLogin.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
-                        stopRecord();
-                        fileUpload();
+                        if (!str_account.equals("")) {
+                            stopRecord();
+                            fileUpload();
+                        }
                         break;
                 }
                 return false;
             }
         });
+
+
     }
 
-    private void startRecord() {
+    private Boolean startRecord() {
+        userAccount = (EditText)findViewById(R.id.userAccount);
+        str_account = userAccount.getText().toString();
+
+        if(str_account.equals("")) {
+            return false;
+        }
+
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "/" + UUID.randomUUID().toString() + ".mp3";
+                + "/" + str_account + ".mp3";
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -83,6 +99,8 @@ public class MainActivity_Login extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return true;
     }
 
     private void stopRecord() {
