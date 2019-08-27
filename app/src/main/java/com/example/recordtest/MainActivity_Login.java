@@ -1,9 +1,9 @@
 package com.example.recordtest;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -47,6 +47,11 @@ public class MainActivity_Login extends AppCompatActivity {
         TextView textView = (TextView)findViewById(R.id.randomString);
         textView.setText(testStr);
 
+
+        userAccount = (EditText)findViewById(R.id.userAccount);
+        SharedPreferences setting = getSharedPreferences("userRecord", MODE_PRIVATE);
+        userAccount.setText(setting.getString("userAccount", ""));
+
         btnLogin = (Button)findViewById(R.id.btnLogin);
 
         if(!checkPermissionFromDevice())
@@ -58,8 +63,9 @@ public class MainActivity_Login extends AppCompatActivity {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         btnLogin.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
-                        if (startRecord() == false)
+                        if (startRecord() == false) {
                             Toast.makeText(MainActivity_Login.this, "請輸入帳戶", Toast.LENGTH_SHORT).show();
+                        }
                         return true;
                     case MotionEvent.ACTION_UP:
                         btnLogin.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
@@ -77,12 +83,13 @@ public class MainActivity_Login extends AppCompatActivity {
     }
 
     private Boolean startRecord() {
-        userAccount = (EditText)findViewById(R.id.userAccount);
         str_account = userAccount.getText().toString();
-
         if(str_account.equals("")) {
             return false;
         }
+
+        SharedPreferences setting = getSharedPreferences("userRecord", MODE_PRIVATE);
+        setting.edit().putString("userAccount", str_account).commit();
 
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "/" + str_account + ".mp3";
