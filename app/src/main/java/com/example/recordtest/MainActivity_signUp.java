@@ -22,28 +22,30 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 public class MainActivity_signUp extends AppCompatActivity {
-    Button btnCheck;
-    EditText account, password, password2, nickname;
-    String str_account, str_password, str_password2, str_nickname;
+    Button btnNextStep;
+    EditText account, password, password2, nickname, email;
+    String str_account, str_password, str_password2, str_nickname, str_email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_sign_up);
 
-        btnCheck = (Button)findViewById(R.id.btnSignUpCheck);
+        btnNextStep = (Button)findViewById(R.id.btnNextStep);
 
-        btnCheck.setOnClickListener(new View.OnClickListener() {
+        btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 account = (EditText)findViewById(R.id.textAccount);
                 password = (EditText)findViewById(R.id.textPW);
                 password2 = (EditText)findViewById(R.id.textPW2);
                 nickname = (EditText)findViewById(R.id.textNickname);
+                email = (EditText)findViewById(R.id.textEmail);
                 str_account = account.getText().toString();
                 str_password = password.getText().toString();
                 str_password2 = password2.getText().toString();
                 str_nickname = nickname.getText().toString();
+                str_email = email.getText().toString();
 
                 if(str_password.equals("") || str_password2.equals("") || str_account.equals("") || str_nickname.equals("")) {
                     Toast.makeText(getApplicationContext(), "不能為空", Toast.LENGTH_SHORT).show();
@@ -78,6 +80,7 @@ public class MainActivity_signUp extends AppCompatActivity {
                 HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
                 httpURLConnection.setRequestMethod("POST");
                 httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
 
                 OutputStream outputStream = httpURLConnection.getOutputStream();
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
@@ -90,6 +93,8 @@ public class MainActivity_signUp extends AppCompatActivity {
                 bw.flush();
                 bw.close();
                 outputStream.close();
+
+                result = "123";
 
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
@@ -136,8 +141,10 @@ public class MainActivity_signUp extends AppCompatActivity {
                 intent.setClass(MainActivity_signUp.this  , MainActivity_recordPage.class);
                 startActivity(intent);
             }
-            else if(result.equals("01"))
+           else if(result.equals("01"))
                 Toast.makeText(getApplicationContext(), "帳號已存在, 請更換", Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(getApplicationContext(), result, Toast.LENGTH_SHORT).show();
         }
 
         @Override

@@ -3,6 +3,7 @@ package com.example.recordtest;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.LightingColorFilter;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -37,10 +39,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
-    String pathSave = "";
+    String pathSave = "", path1 = "", path2 = "", path3 = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
-    Button btnRecord, btnStopRecord, btnPlay, btnStop, btnUpload, btnNextStep;
+    Button btnRecord1, btnPlay1, btnRecord2, btnPlay2, btnRecord3, btnPlay3, btnNextStep;
     Bundle bundle;
     String account, password, nickname;
 
@@ -52,88 +54,70 @@ public class MainActivity_recordPage extends AppCompatActivity {
         bundle = getIntent().getExtras();
 
         String testStr = randomSentence();
-        TextView textView = (TextView)findViewById(R.id.testString);
+        TextView textView = (TextView)findViewById(R.id.testString1);
+        textView.setText(testStr);
+
+        testStr = randomSentence();
+        textView = (TextView)findViewById(R.id.testString2);
+        textView.setText(testStr);
+
+        testStr = randomSentence();
+        textView = (TextView)findViewById(R.id.testString3);
         textView.setText(testStr);
 
         if(!checkPermissionFromDevice())
             requestPermission();
 
-        btnRecord = (Button)findViewById(R.id.btnRecord);
-        btnStopRecord = (Button)findViewById(R.id.btnStopRecord);
-        btnPlay = (Button)findViewById(R.id.btnPlay);
-        btnStop = (Button)findViewById(R.id.btnStop);
-        btnUpload = (Button)findViewById(R.id.btnUpload);
+        btnRecord1 = (Button)findViewById(R.id.btnRecord1);
+        btnPlay1 = (Button)findViewById(R.id.btnPlay1);
+        btnRecord2 = (Button)findViewById(R.id.btnRecord2);
+        btnPlay2 = (Button)findViewById(R.id.btnPlay2);
+        btnRecord3 = (Button)findViewById(R.id.btnRecord3);
+        btnPlay3 = (Button)findViewById(R.id.btnPlay3);
         btnNextStep = (Button)findViewById(R.id.btnNextStep);
-
-        btnRecord.setEnabled(true);
-        btnStopRecord.setEnabled(false);
-        btnPlay.setEnabled(false);
-        btnStop.setEnabled(false);
-        btnUpload.setEnabled(false);
-        btnNextStep.setEnabled(false);
 
         account = bundle.getString("account");
         password = bundle.getString("password");
         nickname = bundle.getString("nickname");
 
+        btnPlay1.setEnabled(false);
+        btnPlay2.setEnabled(false);
+        btnPlay3.setEnabled(false);
+        btnNextStep.setEnabled(false);
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
+        btnRecord1.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if(checkPermissionFromDevice()) {
-                    pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                            + "/" + account + "_audio_record1.mp3";
-                    setupMediaRecorder();
-                    try {
-                        mediaRecorder.prepare();
-                        mediaRecorder.start();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    btnRecord.setEnabled(false);
-                    btnStopRecord.setEnabled(true);
-                    btnPlay.setEnabled(false);
-                    btnStop.setEnabled(false);
-                    btnUpload.setEnabled(false);
-                    btnNextStep.setEnabled(false);
-
-                    Toast.makeText(MainActivity_recordPage.this, "錄製中....", Toast.LENGTH_SHORT).show();
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        path1 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record1.mp3";
+                        btnRecord1.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
+                        startRecord();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        btnRecord1.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
+                        try {
+                            stopRecord();
+                        } catch (RuntimeException e) {
+                            Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
+                        }
+                        btnPlay1.setEnabled(true);
+                        fileUpload();
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                            btnNextStep.setEnabled(true);
+                        break;
                 }
-                else {
-                    requestPermission();
-                }
+                return false;
             }
         });
 
-        btnStopRecord.setOnClickListener(new View.OnClickListener() {
+        btnPlay1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaRecorder.stop();
-
-                btnRecord.setEnabled(true);
-                btnStopRecord.setEnabled(false);
-                btnPlay.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnUpload.setEnabled(true);
-                btnNextStep.setEnabled(false);
-            }
-        });
-
-        btnPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                btnRecord.setEnabled(false);
-                btnStopRecord.setEnabled(false);
-                btnPlay.setEnabled(false);
-                btnStop.setEnabled(true);
-                btnUpload.setEnabled(true);
-                btnNextStep.setEnabled(false);
-
                 mediaPlayer = new MediaPlayer();
                 try {
-                    mediaPlayer.setDataSource(pathSave);
+                    mediaPlayer.setDataSource(path1);
                     mediaPlayer.prepare();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -144,34 +128,89 @@ public class MainActivity_recordPage extends AppCompatActivity {
             }
         });
 
-        btnStop.setOnClickListener(new View.OnClickListener() {
+        btnRecord2.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                btnRecord.setEnabled(true);
-                btnStopRecord.setEnabled(true);
-                btnPlay.setEnabled(true);
-                btnStop.setEnabled(false);
-                btnUpload.setEnabled(true);
-                btnNextStep.setEnabled(false);
-
-
-                if(mediaPlayer != null) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    setupMediaRecorder();
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        path2 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record2.mp3";
+                        btnRecord2.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
+                        startRecord();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        btnRecord2.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
+                        try {
+                            stopRecord();
+                        } catch (RuntimeException e) {
+                            Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
+                        }
+                        btnPlay2.setEnabled(true);
+                        fileUpload();
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                            btnNextStep.setEnabled(true);
+                        break;
                 }
+                return false;
             }
         });
 
-        btnUpload.setOnClickListener(new View.OnClickListener() {
+        btnPlay2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnNextStep.setEnabled(true);
-
-                if(pathSave != null && pathSave != "") {
-                    Toast.makeText(MainActivity_recordPage.this, "上傳中...", Toast.LENGTH_SHORT).show();
-                    fileUpload();
+                mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(path2);
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
+                mediaPlayer.start();
+                Toast.makeText(MainActivity_recordPage.this, "播放中...", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnRecord3.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        path3 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record3.mp3";
+                        btnRecord3.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
+                        startRecord();
+                        return true;
+                    case MotionEvent.ACTION_UP:
+                        btnRecord3.getBackground().setColorFilter(new LightingColorFilter(0xd4d4d4, 0x000000));
+                        try {
+                            stopRecord();
+                        } catch (RuntimeException e) {
+                            Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
+                        }
+                        btnPlay3.setEnabled(true);
+                        fileUpload();
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                            btnNextStep.setEnabled(true);
+                        break;
+                }
+                return false;
+            }
+        });
+
+        btnPlay3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(path3);
+                    mediaPlayer.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mediaPlayer.start();
+                Toast.makeText(MainActivity_recordPage.this, "播放中...", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -180,11 +219,37 @@ public class MainActivity_recordPage extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent();
                 intent.putExtras(bundle);
-                intent.setClass(MainActivity_recordPage.this  , MainActivity_recordPage2.class);
+                intent.setClass(MainActivity_recordPage.this  , MainActivity_signUpSuccess.class);
                 startActivity(intent);
             }
         });
     }
+
+    private void startRecord() {
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
+        mediaRecorder.setOutputFile(pathSave);
+
+        try{
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopRecord() {
+        if(mediaRecorder != null){
+            mediaRecorder.stop();
+            mediaRecorder.reset();
+            mediaRecorder.release();
+
+            mediaRecorder = null;
+        }
+    }
+
 
     private void fileUpload() {
         new Thread(new Runnable() {
@@ -249,14 +314,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 file.delete();
             }
         }).start();
-    }
-
-    private void setupMediaRecorder() {
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        mediaRecorder.setOutputFile(pathSave);
     }
 
     private void requestPermission() {

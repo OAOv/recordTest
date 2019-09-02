@@ -5,76 +5,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center_horizontal|center_vertical"
     tools:context=".MainActivity_signUp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="帳號"
-        android:textSize="30sp" />
+        android:text="註冊"
+        android:textSize="50dp"
+        android:layout_gravity="center"
+        android:layout_margin="20dp" />
 
     <EditText
         android:id="@+id/textAccount"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_margin="10dp"
+        android:hint="帳戶"
+        android:textSize="25dp"
         android:inputType="text" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="密碼"
-        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/textPW"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_margin="10dp"
+        android:hint="密碼"
+        android:textSize="25dp"
         android:inputType="textPassword" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="二次確認密碼 "
-        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/textPW2"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_margin="10dp"
+        android:hint="再次輸入密碼"
+        android:textSize="25dp"
         android:inputType="textPassword" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="暱稱"
-        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/textNickname"
-        android:layout_width="match_parent"
+        android:layout_width="250dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_margin="10dp"
+        android:hint="暱稱"
+        android:textSize="25dp"
         android:inputType="text" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <EditText
+        android:id="@+id/textEmail"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="電子郵件"
+        android:textSize="25dp"
+        android:inputType="text" />
 
-        <Button
-            android:id="@+id/btnSignUpCheck"
-            android:layout_width="128dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:text="下一步"
-            android:textSize="20sp" />
-    </RelativeLayout>
+    <Button
+        android:id="@+id/btnNextStep"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:text="下一步"
+        android:textSize="20dp" />
 
-</LinearLayout>
+    </LinearLayout>
