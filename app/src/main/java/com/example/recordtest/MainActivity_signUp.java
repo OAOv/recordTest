@@ -94,8 +94,6 @@ public class MainActivity_signUp extends AppCompatActivity {
                 bw.close();
                 outputStream.close();
 
-                result = "123";
-
                 InputStream inputStream = httpURLConnection.getInputStream();
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
                 StringBuilder stringBuilder = new StringBuilder();

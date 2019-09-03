@@ -14,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -337,6 +338,85 @@ public class MainActivity_recordPage extends AppCompatActivity {
     }
 
     /////////////////////////////////
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+            deleteAccount();
+        }
+        MainActivity_recordPage.this.finish();
+        return true;
+    }
+
+    public void deleteAccount() {
+        BackgroundTask bt = new BackgroundTask();
+        bt.execute(account);
+    }
+
+    class BackgroundTask extends AsyncTask<String, Void, String> {
+        String my_url;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "error!";
+            final String ac = params[0];
+
+            try {
+                URL url = new URL(my_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                String newData = URLEncoder.encode("account", "UTF-8") + "=" + URLEncoder.encode(ac, "UTF-8");
+
+                bw.write(newData);
+                bw.flush();
+                bw.close();
+                outputStream.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line = null;
+                Boolean isFirst = true;
+                while((line = bufferedReader.readLine()) != null) {
+                    if(isFirst) {
+                        isFirst = false;
+                    }
+                    else {
+                        stringBuilder.append("\n");
+                    }
+                    stringBuilder.append(line);
+                }
+                inputStream.close();
+                result = stringBuilder.toString();
+
+                httpURLConnection.disconnect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            my_url = "http://140.129.25.230/recordUpdate/deleteAccount.php";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+    }
     ////////////////////////////////
 
     private boolean checkPermissionFromDevice() {
