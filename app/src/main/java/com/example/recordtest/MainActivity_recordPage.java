@@ -340,7 +340,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
     /////////////////////////////////
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
             deleteAccount();
         }
         MainActivity_recordPage.this.finish();
