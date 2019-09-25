@@ -122,8 +122,7 @@ public class MainActivity_signUp extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            //my_url = "http://192.168.43.181/recordUpdate/checkAccount.php";
-            my_url = "http://140.129.25.230/recordUpdate/signUp.php";
+            my_url = "http://140.129.25.230/SecretNotes/signUp.php";
         }
 
         @Override

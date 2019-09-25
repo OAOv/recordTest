@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
 import android.media.MediaRecorder;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -18,11 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,7 +35,7 @@ public class MainActivity_Login extends AppCompatActivity {
 
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
-    String pathSave = "";
+    String pathSave = "", result = "";
     EditText userAccount;
     String str_account = "";
     MediaRecorder mediaRecorder;
@@ -72,14 +75,13 @@ public class MainActivity_Login extends AppCompatActivity {
                         if (!str_account.equals("")) {
                             stopRecord();
                             fileUpload();
+                            Toast.makeText(MainActivity_Login.this, result, Toast.LENGTH_SHORT).show();
                         }
                         break;
                 }
                 return false;
             }
         });
-
-
     }
 
     private Boolean startRecord() {
@@ -129,8 +131,7 @@ public class MainActivity_Login extends AppCompatActivity {
                     String hyphens = "--";
                     String boundary = "*****";
                     File file = new File(pathSave);
-                    //URL url = new URL("http://192.168.43.181/recordUpdate/loginUpload.php");
-                    URL url = new URL("http://140.129.25.230/recordUpdate/loginUpload.php");   //school's server
+                    URL url = new URL("http://140.129.25.230/SecretNotes/loginUpload.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -163,6 +164,25 @@ public class MainActivity_Login extends AppCompatActivity {
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
                         ds.close();
+
+                        InputStream inputStream = conn.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                        StringBuilder stringBuilder = new StringBuilder();
+                        String line = null;
+                        Boolean isFirst = true;
+                        while((line = bufferedReader.readLine()) != null) {
+                            if(isFirst) {
+                                isFirst = false;
+                            }
+                            else {
+                                stringBuilder.append("\n");
+                            }
+                            stringBuilder.append(line);
+                        }
+                        inputStream.close();
+                        conn.disconnect();
+                        result = stringBuilder.toString();
+
                         conn.disconnect();
                     }
                 }

@@ -261,8 +261,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                     String hyphens = "--";
                     String boundary = "*****";
                     File file = new File(pathSave);
-                    //URL url = new URL("http://192.168.43.181/recordUpdate/update.php");
-                    URL url = new URL("http://140.129.25.230/recordUpdate/update.php");   //school's server
+                    URL url = new URL("http://140.129.25.230/SecretNotes/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                     conn.setDoInput(true);
@@ -406,7 +405,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
         @Override
         protected void onPreExecute() {
-            my_url = "http://140.129.25.230/recordUpdate/deleteAccount.php";
+            my_url = "http://140.129.25.230/SecretNotes/deleteAccount.php";
         }
 
         @Override
