@@ -4,6 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
+import android.media.AudioFormat;
+import android.media.AudioManager;
+import android.media.AudioRecord;
+import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -15,6 +19,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +31,8 @@ import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,12 +47,21 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
-    String pathSave = "", path1 = "", path2 = "", path3 = "";
+    String pathSave = "", pathSaveTmp = "", path1 = "", path2 = "", path3 = "", path1Tmp = "", path2Tmp = "", path3Tmp = "";
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     Button btnRecord1, btnPlay1, btnRecord2, btnPlay2, btnRecord3, btnPlay3, btnNextStep;
     Bundle bundle;
     String account, password, nickname;
+
+    private AudioRecord mAudioRecord;
+    private boolean isRecording = false;
+    private static final int audioBPP = 16;
+    private static final int audioSource = MediaRecorder.AudioSource.MIC;
+    private static final int audioRate = 44100;
+    private static final int audioChannel = AudioFormat.CHANNEL_IN_MONO;
+    private static final int audioFormat = AudioFormat.ENCODING_PCM_16BIT;
+    int bufferSize = 2 * AudioRecord.getMinBufferSize(audioRate,audioChannel,audioFormat);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,8 +107,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        path1Tmp = pathSaveTmp = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record1_tmp.wav";
                         path1 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                                + "/" + account + "_audio_record1.mp3";
+                                + "/" + account + "_audio_record1.wav";
                         btnRecord1.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
                         startRecord();
                         return true;
@@ -116,7 +134,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
         btnPlay1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mediaPlayer = new MediaPlayer();
+                mediaPlayer= new MediaPlayer();
                 try {
                     mediaPlayer.setDataSource(path1);
                     mediaPlayer.prepare();
@@ -125,6 +143,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 }
 
                 mediaPlayer.start();
+
                 Toast.makeText(MainActivity_recordPage.this, "播放中...", Toast.LENGTH_SHORT).show();
             }
         });
@@ -134,8 +153,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        path2Tmp = pathSaveTmp = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record2_tmp.wav";
                         path2 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                                + "/" + account + "_audio_record2.mp3";
+                                + "/" + account + "_audio_record2.wav";
                         btnRecord2.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
                         startRecord();
                         return true;
@@ -177,8 +198,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        path3Tmp = pathSaveTmp = Environment.getExternalStorageDirectory().getAbsolutePath()
+                                + "/" + account + "_audio_record3_tmp.wav";
                         path3 = pathSave = Environment.getExternalStorageDirectory().getAbsolutePath()
-                                + "/" + account + "_audio_record3.mp3";
+                                + "/" + account + "_audio_record3.wav";
                         btnRecord3.getBackground().setColorFilter(new LightingColorFilter(0x7d7d7d, 0x000000));
                         startRecord();
                         return true;
@@ -218,6 +241,16 @@ public class MainActivity_recordPage extends AppCompatActivity {
         btnNextStep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File file;
+                for(int i = 1; i < 4; i++) {
+                    file = new File("path" + i);
+                    file.delete();
+                    file = new File("path" + i + "Tmp");
+                    file.delete();
+                }
+
+                buildGmm();
+
                 Intent intent = new Intent();
                 intent.putExtras(bundle);
                 intent.setClass(MainActivity_recordPage.this  , MainActivity_signUpSuccess.class);
@@ -227,30 +260,150 @@ public class MainActivity_recordPage extends AppCompatActivity {
     }
 
     private void startRecord() {
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        mediaRecorder.setOutputFile(pathSave);
+        isRecording = true;
+        mAudioRecord = new AudioRecord(audioSource, audioRate, audioChannel, audioFormat, bufferSize);
 
-        try{
-            mediaRecorder.prepare();
-            mediaRecorder.start();
+        final byte data[] = new byte[bufferSize];
+        final File fileAudio = new File(pathSaveTmp);
+
+        mAudioRecord.startRecording();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(fileAudio);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                if (null != fos) {
+                    while (isRecording) {
+                        int read = mAudioRecord.read(data, 0, bufferSize);
+                        //返回正确时才读取数据
+                        if (AudioRecord.ERROR_INVALID_OPERATION != read) {
+                            try {
+                                fos.write(data);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+    private void stopRecord() {
+        isRecording = false;
+        if (mAudioRecord != null) {
+            mAudioRecord.stop();
+            mAudioRecord.release();
+            //调用release之后必须置为null
+            mAudioRecord = null;
+
+            copyWaveFile(pathSaveTmp, pathSave);
+        }
+    }
+
+    /////////////////////////////
+    //to .wav file
+    //http://selvaline.blogspot.com/2016/04/record-audio-wav-format-android-how-to.html
+    private void copyWaveFile(String inFilename, String outFilename) {
+        FileInputStream in = null;
+        FileOutputStream out = null;
+        long totalAudioLen = 0;
+        long totalDataLen = totalAudioLen + 36;
+        long longSampleRate = audioRate;
+        int channels = ((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
+                : 2);
+        long byteRate = audioBPP * audioRate * channels / 8;
+
+        byte[] data = new byte[bufferSize];
+
+        try {
+            in = new FileInputStream(inFilename);
+            out = new FileOutputStream(outFilename);
+            totalAudioLen = in.getChannel().size();
+            totalDataLen = totalAudioLen + 36;
+
+            WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
+                    longSampleRate, channels, byteRate);
+
+            while (in.read(data) != -1) {
+                out.write(data);
+            }
+
+            in.close();
+            out.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void stopRecord() {
-        if(mediaRecorder != null){
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            mediaRecorder.release();
+    private void WriteWaveFileHeader(FileOutputStream out, long totalAudioLen,
+                                     long totalDataLen, long longSampleRate, int channels, long byteRate)
+            throws IOException {
+        byte[] header = new byte[44];
 
-            mediaRecorder = null;
-        }
+        header[0] = 'R'; // RIFF/WAVE header
+        header[1] = 'I';
+        header[2] = 'F';
+        header[3] = 'F';
+        header[4] = (byte) (totalDataLen & 0xff);
+        header[5] = (byte) ((totalDataLen >> 8) & 0xff);
+        header[6] = (byte) ((totalDataLen >> 16) & 0xff);
+        header[7] = (byte) ((totalDataLen >> 24) & 0xff);
+        header[8] = 'W';
+        header[9] = 'A';
+        header[10] = 'V';
+        header[11] = 'E';
+        header[12] = 'f'; // 'fmt ' chunk
+        header[13] = 'm';
+        header[14] = 't';
+        header[15] = ' ';
+        header[16] = 16; // 4 bytes: size of 'fmt ' chunk
+        header[17] = 0;
+        header[18] = 0;
+        header[19] = 0;
+        header[20] = 1; // format = 1
+        header[21] = 0;
+        header[22] = (byte) channels;
+        header[23] = 0;
+        header[24] = (byte) (longSampleRate & 0xff);
+        header[25] = (byte) ((longSampleRate >> 8) & 0xff);
+        header[26] = (byte) ((longSampleRate >> 16) & 0xff);
+        header[27] = (byte) ((longSampleRate >> 24) & 0xff);
+        header[28] = (byte) (byteRate & 0xff);
+        header[29] = (byte) ((byteRate >> 8) & 0xff);
+        header[30] = (byte) ((byteRate >> 16) & 0xff);
+        header[31] = (byte) ((byteRate >> 24) & 0xff);
+        header[32] = (byte) (((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
+                : 2) * 16 / 8); // block align
+        header[33] = 0;
+        header[34] = audioBPP; // bits per sample
+        header[35] = 0;
+        header[36] = 'd';
+        header[37] = 'a';
+        header[38] = 't';
+        header[39] = 'a';
+        header[40] = (byte) (totalAudioLen & 0xff);
+        header[41] = (byte) ((totalAudioLen >> 8) & 0xff);
+        header[42] = (byte) ((totalAudioLen >> 16) & 0xff);
+        header[43] = (byte) ((totalAudioLen >> 24) & 0xff);
+
+        out.write(header, 0, 44);
     }
-
+    /////////////////////////////
 
     private void fileUpload() {
         new Thread(new Runnable() {
@@ -309,9 +462,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                File file = new File(pathSave);
-                file.delete();
             }
         }).start();
     }
@@ -341,17 +491,28 @@ public class MainActivity_recordPage extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             deleteAccount();
+
+            File file;
+            for(int i = 1; i < 4; i++) {
+                file = new File("path" + i);
+                if(file.exists())
+                    file.delete();
+                file = new File("path" + i + "Tmp");
+                if(file.exists())
+                    file.delete();
+            }
+
+            MainActivity_recordPage.this.finish();
         }
-        MainActivity_recordPage.this.finish();
         return true;
     }
 
     public void deleteAccount() {
-        BackgroundTask bt = new BackgroundTask();
+        deleteAccountBackgroundTask bt = new deleteAccountBackgroundTask();
         bt.execute(account);
     }
 
-    class BackgroundTask extends AsyncTask<String, Void, String> {
+    class deleteAccountBackgroundTask extends AsyncTask<String, Void, String> {
         String my_url;
 
         @Override
@@ -406,6 +567,79 @@ public class MainActivity_recordPage extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             my_url = "http://140.129.25.230/SecretNotes/deleteAccount.php";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+    }
+    ////////////////////////////////
+
+    ////////////////////////////////
+    public void buildGmm() {
+        buildGmmBackgroundTask bt = new buildGmmBackgroundTask();
+        bt.execute(account);
+    }
+
+    class buildGmmBackgroundTask extends AsyncTask<String, Void, String> {
+        String my_url;
+
+        @Override
+        protected String doInBackground(String... params) {
+            String result = "error!";
+            final String ac = params[0];
+
+            try {
+                URL url = new URL(my_url);
+                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setDoOutput(true);
+                httpURLConnection.setDoInput(true);
+
+                OutputStream outputStream = httpURLConnection.getOutputStream();
+                BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+
+                String newData = URLEncoder.encode("account", "UTF-8") + "=" + URLEncoder.encode(ac, "UTF-8");
+
+                bw.write(newData);
+                bw.flush();
+                bw.close();
+                outputStream.close();
+
+                InputStream inputStream = httpURLConnection.getInputStream();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                StringBuilder stringBuilder = new StringBuilder();
+                String line = null;
+                Boolean isFirst = true;
+                while((line = bufferedReader.readLine()) != null) {
+                    if(isFirst) {
+                        isFirst = false;
+                    }
+                    else {
+                        stringBuilder.append("\n");
+                    }
+                    stringBuilder.append(line);
+                }
+                inputStream.close();
+                result = stringBuilder.toString();
+
+                httpURLConnection.disconnect();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return result;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            my_url = "http://140.129.25.230/SecretNotes/call_dat_python.php";
         }
 
         @Override
