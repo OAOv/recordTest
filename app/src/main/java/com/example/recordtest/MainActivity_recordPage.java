@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -19,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -48,7 +45,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
     String pathSave = "", pathSaveTmp = "", path1 = "", path2 = "", path3 = "", path1Tmp = "", path2Tmp = "", path3Tmp = "";
-    MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     Button btnRecord1, btnPlay1, btnRecord2, btnPlay2, btnRecord3, btnPlay3, btnNextStep;
     Bundle bundle;
@@ -449,11 +445,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
                         Log.e(TAG, conn.getResponseCode() + "=======");
                         conn.disconnect();
 
-                    /*
-                                    作者：安卓小农民
-                                    来源：CSDN
-                                    原文：https://blog.csdn.net/Tomtwo/article/details/51721811
-                                    版权声明：本文为博主原创文章，转载请附上博文链接！*/
+                    /*作者：安卓小农民
+                     来源：CSDN
+                     原文：https://blog.csdn.net/Tomtwo/article/details/51721811
+                     版权声明：本文为博主原创文章，转载请附上博文链接！*/
                     }
                 }
                 catch (MalformedURLException e) {
@@ -626,6 +621,8 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 }
                 inputStream.close();
                 result = stringBuilder.toString();
+
+                Log.e("result: ", result);
 
                 httpURLConnection.disconnect();
             } catch (MalformedURLException e) {

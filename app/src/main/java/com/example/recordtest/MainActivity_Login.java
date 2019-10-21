@@ -44,8 +44,8 @@ public class MainActivity_Login extends AppCompatActivity {
     String pathSave = "", pathSaveTmp = "", result = "";
     EditText userAccount;
     String str_account = "";
-    MediaRecorder mediaRecorder;
     Button btnLogin;
+    SharedPreferences setting;
 
     private  AudioRecord mAudioRecord;
     private boolean isRecording = false;
@@ -67,7 +67,7 @@ public class MainActivity_Login extends AppCompatActivity {
 
 
         userAccount = (EditText)findViewById(R.id.userAccount);
-        SharedPreferences setting = getSharedPreferences("userRecord", MODE_PRIVATE);
+        setting = getSharedPreferences("userRecord", MODE_PRIVATE);
         userAccount.setText(setting.getString("userAccount", ""));
 
         btnLogin = (Button)findViewById(R.id.btnLogin);
@@ -104,6 +104,9 @@ public class MainActivity_Login extends AppCompatActivity {
         if(str_account.equals("")) {
             return false;
         }
+
+        setting.edit().putString("userAccount", str_account).commit();
+        Log.e("setting", setting.getString("userAccount", "null"));
 
         isRecording = true;
         pathSave = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + str_account + ".wav";
@@ -317,6 +320,18 @@ public class MainActivity_Login extends AppCompatActivity {
                             result = stringBuilder.toString();
 
                             Log.e(TAG, result);
+                            Log.e(TAG, str_account);
+
+                            if(result.equals(str_account)) {
+                                Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginSuccess.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
+                            else {
+                                Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginUnsucccess.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                            }
                             //如果結果跟輸入名稱相同就登入, 不同跳出訊息重新錄音
                             /*Intent intent = new Intent();
                             intent.setClass(MainActivity_Login.this, MainActivity_signUpSuccess.class);
