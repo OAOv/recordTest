@@ -44,11 +44,12 @@ public class MainActivity_recordPage extends AppCompatActivity {
 
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
-    String pathSave = "", pathSaveTmp = "", path1 = "", path2 = "", path3 = "", path1Tmp = "", path2Tmp = "", path3Tmp = "";
+    String pathSave = "", pathSaveTmp = "", path1 = "", path2 = "", path3 = "", path1Tmp = "", path2Tmp = "", path3Tmp = "", result = "";
     MediaPlayer mediaPlayer;
     Button btnRecord1, btnPlay1, btnRecord2, btnPlay2, btnRecord3, btnPlay3, btnNextStep;
     Bundle bundle;
     String account, password, nickname;
+    Boolean isOk = false;
 
     private AudioRecord mAudioRecord;
     private boolean isRecording = false;
@@ -77,9 +78,6 @@ public class MainActivity_recordPage extends AppCompatActivity {
         testStr = randomSentence();
         textView = (TextView)findViewById(R.id.testString3);
         textView.setText(testStr);
-
-        if(!checkPermissionFromDevice())
-            requestPermission();
 
         btnRecord1 = (Button)findViewById(R.id.btnRecord1);
         btnPlay1 = (Button)findViewById(R.id.btnPlay1);
@@ -239,9 +237,9 @@ public class MainActivity_recordPage extends AppCompatActivity {
             public void onClick(View v) {
                 File file;
                 for(int i = 1; i < 4; i++) {
-                    file = new File("path" + i);
+                    file = new File("path" + i + ".wav");
                     file.delete();
-                    file = new File("path" + i + "Tmp");
+                    file = new File("path" + i + "_tmp.wav");
                     file.delete();
                 }
 
@@ -443,6 +441,27 @@ public class MainActivity_recordPage extends AppCompatActivity {
                         ds.close();
 
                         Log.e(TAG, conn.getResponseCode() + "=======");
+
+                        if(conn.getResponseCode() == 200) {
+                            InputStream inputStream = conn.getInputStream();
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+                            StringBuilder stringBuilder = new StringBuilder();
+                            String line = null;
+                            Boolean isFirst = true;
+                            while ((line = bufferedReader.readLine()) != null) {
+                                if (isFirst) {
+                                    isFirst = false;
+                                } else {
+                                    stringBuilder.append("\n");
+                                }
+                                stringBuilder.append(line);
+                            }
+                            inputStream.close();
+                            conn.disconnect();
+                            result = stringBuilder.toString();
+
+                            Log.e(TAG, result);
+                        }
                         conn.disconnect();
 
                     /*作者：安卓小农民

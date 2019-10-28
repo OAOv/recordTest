@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">recordTest</string>
     <string name="title_activity_index">index</string>
+    <string name="title_activity_main_note">MainActivity_note</string>
 </resources>
