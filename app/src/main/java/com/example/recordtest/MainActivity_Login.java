@@ -8,6 +8,7 @@ import android.graphics.LightingColorFilter;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
@@ -15,12 +16,17 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -46,6 +52,7 @@ public class MainActivity_Login extends AppCompatActivity {
     String str_account = "";
     Button btnLogin;
     SharedPreferences setting;
+    private Bundle bundle, bundleOfSaveAccount;
 
     private  AudioRecord mAudioRecord;
     private boolean isRecording = false;
@@ -60,8 +67,9 @@ public class MainActivity_Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main__login);
+        bundle = getIntent().getExtras();
 
-        String testStr = "\n" + randomSentence() + "\n";
+        String testStr = "\n" + bundle.getString("loginStr") + "\n";
         TextView textView = (TextView)findViewById(R.id.randomString);
         textView.setText(testStr);
 
@@ -323,19 +331,22 @@ public class MainActivity_Login extends AppCompatActivity {
                             Log.e(TAG, str_account);
 
                             if(result.equals(str_account)) {
+                                bundleOfSaveAccount = new Bundle();
+                                bundleOfSaveAccount.putString("account", str_account);
                                 Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginSuccess.class);
+                                intent.putExtras(bundleOfSaveAccount);
                                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }
                             else {
                                 Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginUnsucccess.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(intent);
+                                ///測試筆記
+                                /*bundleOfSaveAccount = new Bundle();
+                                bundleOfSaveAccount.putString("account", str_account);
+                                Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginSuccess.class);
+                                intent.putExtras(bundleOfSaveAccount);
+                                startActivity(intent);*/
                             }
-                            //如果結果跟輸入名稱相同就登入, 不同跳出訊息重新錄音
-                            /*Intent intent = new Intent();
-                            intent.setClass(MainActivity_Login.this, MainActivity_signUpSuccess.class);
-                            startActivity(intent);*/
                         }
 
                         conn.disconnect();
@@ -373,32 +384,4 @@ public class MainActivity_Login extends AppCompatActivity {
     }
 
     ///////////////////////////
-
-    public static String randomSentence(){
-
-
-        String[] nounsPosition={"森林", "銀河", "城市" ,"教室", "學校", "公司", "遊樂園", "草地", "公園", "星空", "音樂廳"};
-        String[] nonuTime = {"黑夜", "早晨", "正午", "凌晨", "清晨", "半夜", "午後"};
-        String[] nounsN={"小鳥", "斑馬", "貓咪", "小狗", "音樂", "小提琴", "鋼琴", "長笛", "單簧管", "雲彩", "金魚"};
-        String[] articles={"這些", "有著", "一些", "一片", "任何", "任意", "存在", "那些", "沒有", "失去", "一群", "這裡有", "那裡有"};
-        String[] articlesIng = {"身在", "待在", "漫步在", "睡在", "醒來在"};
-        String[] verbs={ "跑", "走", "跳", "飛" ,"越", "游", "發射", "穿", "吸引", "排斥"};
-        String[] prepositions={ "向", "來", "過", "上" ,"下", "到", "去"};
-
-        int  rNounPosition=(int)(Math.random() * 11);
-        int  rNounTime=(int)(Math.random() * 7);
-        int  rNounN=(int)(Math.random() * 11);
-
-        int  rArticles=(int)(Math.random() * 13);
-        int  rArticleIng=(int)(Math.random() * 4);
-
-        int  rVerb=(int)(Math.random() * 10);
-        int  rPrepostion=(int)(Math.random() * 7);
-
-
-        String randomSentence = articlesIng[rArticleIng] + nonuTime[rNounTime] + articles[rArticles] + nounsN[rNounN] +
-                verbs[rVerb] + prepositions[rPrepostion] + nounsPosition[rNounPosition];
-
-        return randomSentence;
-    }
 }

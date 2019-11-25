@@ -4,28 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@drawable/telegram_wallpapers"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".MainActivity_loginSuccess">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="280dp"
+        android:layout_height="240dp"
+        android:background="@drawable/background_rec"
         android:gravity="center"
-        android:orientation="vertical"
-        android:background="@drawable/background_rec" >
+        android:orientation="vertical">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:text="登入成功"
-            android:textSize="60dp"
-            android:layout_margin="15dp" />
+            android:textSize="46sp" />
 
         <Button
             android:id="@+id/button"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:text="Button" />
+            android:layout_width="180dp"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_green"
+            android:text="Button"
+            android:textColor="#666666" />
 
 
     </LinearLayout>

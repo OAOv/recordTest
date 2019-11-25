@@ -11,6 +11,7 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -45,11 +46,12 @@ public class MainActivity_recordPage extends AppCompatActivity {
     private final String TAG = "RecorderActivity";
     final int REQUEST_PERMISSION_CODE = 1000;
     String pathSave = "", pathSaveTmp = "", path1 = "", path2 = "", path3 = "", path1Tmp = "", path2Tmp = "", path3Tmp = "", result = "";
+    String testStr1 = "", testStr2 = "", testStr3 = "";
     MediaPlayer mediaPlayer;
     Button btnRecord1, btnPlay1, btnRecord2, btnPlay2, btnRecord3, btnPlay3, btnNextStep;
     Bundle bundle;
     String account, password, nickname;
-    Boolean isOk = false;
+    Handler handler = new Handler();
 
     private AudioRecord mAudioRecord;
     private boolean isRecording = false;
@@ -64,20 +66,21 @@ public class MainActivity_recordPage extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_record_page);
+        requestPermission();
 
         bundle = getIntent().getExtras();
+        testStr1 = bundle.getString("testStr1");
+        testStr2 = bundle.getString("testStr2");
+        testStr3 = bundle.getString("testStr3");
 
-        String testStr = randomSentence();
         TextView textView = (TextView)findViewById(R.id.testString1);
-        textView.setText(testStr);
+        textView.setText(testStr1);
 
-        testStr = randomSentence();
         textView = (TextView)findViewById(R.id.testString2);
-        textView.setText(testStr);
+        textView.setText(testStr2);
 
-        testStr = randomSentence();
         textView = (TextView)findViewById(R.id.testString3);
-        textView.setText(testStr);
+        textView.setText(testStr3);
 
         btnRecord1 = (Button)findViewById(R.id.btnRecord1);
         btnPlay1 = (Button)findViewById(R.id.btnPlay1);
@@ -116,9 +119,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
                             Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
                         }
                         btnPlay1.setEnabled(true);
-                        fileUpload();
-                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                        fileUpload(1);
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals("")) {
                             btnNextStep.setEnabled(true);
+                        }
                         break;
                 }
                 return false;
@@ -162,9 +166,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
                             Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
                         }
                         btnPlay2.setEnabled(true);
-                        fileUpload();
-                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                        fileUpload(2);
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals("")) {
                             btnNextStep.setEnabled(true);
+                        }
                         break;
                 }
                 return false;
@@ -207,9 +212,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
                             Toast.makeText(MainActivity_recordPage.this, "請長按進行錄音", Toast.LENGTH_SHORT).show();
                         }
                         btnPlay3.setEnabled(true);
-                        fileUpload();
-                        if(!path1.equals("") && !path2.equals("") && !path3.equals(""))
+                        fileUpload(3);
+                        if(!path1.equals("") && !path2.equals("") && !path3.equals("")) {
                             btnNextStep.setEnabled(true);
+                        }
                         break;
                 }
                 return false;
@@ -236,19 +242,20 @@ public class MainActivity_recordPage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 File file;
-                for(int i = 1; i < 4; i++) {
-                    file = new File("path" + i + ".wav");
-                    file.delete();
-                    file = new File("path" + i + "_tmp.wav");
-                    file.delete();
-                }
+                file = new File(path1);
+                file.delete();
+                file = new File(path1Tmp);
+                file.delete();
+                file = new File(path2);
+                file.delete();
+                file = new File(path2Tmp);
+                file.delete();
+                file = new File(path3);
+                file.delete();
+                file = new File(path3Tmp);
+                file.delete();
 
                 buildGmm();
-
-                Intent intent = new Intent();
-                intent.putExtras(bundle);
-                intent.setClass(MainActivity_recordPage.this  , MainActivity_signUpSuccess.class);
-                startActivity(intent);
             }
         });
     }
@@ -381,8 +388,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
         header[29] = (byte) ((byteRate >> 8) & 0xff);
         header[30] = (byte) ((byteRate >> 16) & 0xff);
         header[31] = (byte) ((byteRate >> 24) & 0xff);
-        header[32] = (byte) (((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
-                : 2) * 16 / 8); // block align
+        header[32] = (byte) (((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1: 2) * 16 / 8); // block align
         header[33] = 0;
         header[34] = audioBPP; // bits per sample
         header[35] = 0;
@@ -399,7 +405,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
     }
     /////////////////////////////
 
-    private void fileUpload() {
+    private synchronized void fileUpload(final int curIndex) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -407,7 +413,15 @@ public class MainActivity_recordPage extends AppCompatActivity {
                     String end = "\r\n";
                     String hyphens = "--";
                     String boundary = "*****";
-                    File file = new File(pathSave);
+                    File file = new File("");
+                    if(curIndex == 1) {
+                        file =  new File(path1);
+                    } else if (curIndex == 2) {
+                        file = new File(path2);
+                    } else if(curIndex == 3) {
+                        file = new File(path3);
+                    }
+
                     URL url = new URL("http://140.129.25.230/SecretNotes/update.php");   //school's server
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -440,7 +454,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
                         ds.flush();
                         ds.close();
 
-                        Log.e(TAG, conn.getResponseCode() + "=======");
+                        Log.e(TAG, pathSave + ": " + conn.getResponseCode());
 
                         if(conn.getResponseCode() == 200) {
                             InputStream inputStream = conn.getInputStream();
@@ -491,10 +505,10 @@ public class MainActivity_recordPage extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_PERMISSION_CODE: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                /*if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     Toast.makeText(this, "PERMISSION GRANTED", Toast.LENGTH_SHORT).show();
                 else
-                    Toast.makeText(this, "PERMISSION DENIED", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "PERMISSION DENIED", Toast.LENGTH_SHORT).show();*/
             }
             break;
         }
@@ -507,14 +521,18 @@ public class MainActivity_recordPage extends AppCompatActivity {
             deleteAccount();
 
             File file;
-            for(int i = 1; i < 4; i++) {
-                file = new File("path" + i);
-                if(file.exists())
-                    file.delete();
-                file = new File("path" + i + "Tmp");
-                if(file.exists())
-                    file.delete();
-            }
+            file = new File(path1);
+            if(file.exists())  file.delete();
+            file = new File(path1Tmp);
+            if(file.exists())  file.delete();
+            file = new File(path2);
+            if(file.exists())  file.delete();
+            file = new File(path2Tmp);
+            if(file.exists())  file.delete();
+            file = new File(path3);
+            if(file.exists())  file.delete();
+            file = new File(path3Tmp);
+            if(file.exists())  file.delete();
 
             MainActivity_recordPage.this.finish();
         }
@@ -594,7 +612,12 @@ public class MainActivity_recordPage extends AppCompatActivity {
     ////////////////////////////////
 
     ////////////////////////////////
-    public void buildGmm() {
+    public synchronized void buildGmm() {
+        handler.postDelayed(new Runnable() {
+            public void run() {
+
+            }}, 3000);
+
         buildGmmBackgroundTask bt = new buildGmmBackgroundTask();
         bt.execute(account);
     }
@@ -641,7 +664,21 @@ public class MainActivity_recordPage extends AppCompatActivity {
                 inputStream.close();
                 result = stringBuilder.toString();
 
-                Log.e("result: ", result);
+                Log.e(TAG, "result: " + result);
+
+
+                if(result.indexOf(account + ".gmm") < 0) {
+                    Intent intent = new Intent();
+                    intent.putExtras(bundle);
+                    intent.setClass(MainActivity_recordPage.this, MainActivity_signUpUnsuccess.class);
+                    startActivity(intent);
+                }
+                else {
+                    Intent intent = new Intent();
+                    intent.putExtras(bundle);
+                    intent.setClass(MainActivity_recordPage.this, MainActivity_signUpSuccess.class);
+                    startActivity(intent);
+                }
 
                 httpURLConnection.disconnect();
             } catch (MalformedURLException e) {
@@ -674,31 +711,7 @@ public class MainActivity_recordPage extends AppCompatActivity {
         return write_external_storage_result == PackageManager.PERMISSION_GRANTED &&
                 record_audio_result == PackageManager.PERMISSION_GRANTED;
     }
-    public static String randomSentence(){
 
-
-        String[] nounsPosition={"森林", "銀河", "城市" ,"教室", "學校", "公司", "遊樂園", "草地", "公園", "星空", "音樂廳"};
-        String[] nonuTime = {"黑夜", "早晨", "正午", "凌晨", "清晨", "半夜", "午後"};
-        String[] nounsN={"小鳥", "斑馬", "貓咪", "小狗", "音樂", "小提琴", "鋼琴", "長笛", "單簧管", "雲彩", "金魚"};
-        String[] articles={"這些", "有著", "一些", "一片", "任何", "任意", "存在", "那些", "沒有", "失去", "一群", "這裡有", "那裡有"};
-        String[] articlesIng = {"身在", "待在", "漫步在", "睡在", "醒來在"};
-        String[] verbs={ "跑", "走", "跳", "飛" ,"越", "游", "發射", "穿", "吸引", "排斥"};
-        String[] prepositions={ "向", "來", "過", "上" ,"下", "到", "去"};
-
-        int  rNounPosition=(int)(Math.random() * 11);
-        int  rNounTime=(int)(Math.random() * 7);
-        int  rNounN=(int)(Math.random() * 11);
-
-        int  rArticles=(int)(Math.random() * 13);
-        int  rArticleIng=(int)(Math.random() * 4);
-
-        int  rVerb=(int)(Math.random() * 10);
-        int  rPrepostion=(int)(Math.random() * 7);
-
-
-        String randomSentence = articlesIng[rArticleIng] + nonuTime[rNounTime] + articles[rArticles] + nounsN[rNounN] +
-                verbs[rVerb] + prepositions[rPrepostion] + nounsPosition[rNounPosition] + "。";
-
-        return randomSentence;
-    }
+    ////////////////////////////////
+    ////////////////////////////////
 }

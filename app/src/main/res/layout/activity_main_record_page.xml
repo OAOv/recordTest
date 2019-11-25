@@ -4,51 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_telegram"
     android:orientation="vertical"
     tools:context=".MainActivity_recordPage">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="註冊"
-        android:textSize="45dp"
         android:layout_gravity="center"
-        android:layout_margin="10dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="請錄製以下三個句子"
-        android:textSize="25dp" />
+        android:layout_marginTop="30dp"
+        android:text="請長按錄製以下三個句子"
+        android:textSize="20dp" />
 
     <TextView
         android:id="@+id/testString1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="22dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:textSize="22dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/record_blue1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/record_icon_blue" />
+
         <Button
             android:id="@+id/btnRecord1"
-            android:text="錄製"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_blue"
+            android:text="錄製"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/play_red1"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/play_icon_red" />
 
         <Button
             android:id="@+id/btnPlay1"
-            android:text="回放"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_pink"
+            android:text="回放"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
     <TextView
@@ -56,28 +72,49 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="22dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:textSize="22dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/record_blue2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/record_icon_blue" />
+
         <Button
             android:id="@+id/btnRecord2"
-            android:text="錄製"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_blue"
+            android:text="錄製"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/play_red2"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/play_icon_red" />
 
         <Button
             android:id="@+id/btnPlay2"
-            android:text="回放"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_pink"
+            android:text="回放"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <TextView
@@ -85,40 +122,66 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="22dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:textSize="22dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
+        android:layout_gravity="center_horizontal">
+
+        <ImageView
+            android:id="@+id/record_blue3"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/record_icon_blue" />
+
         <Button
             android:id="@+id/btnRecord3"
-            android:text="錄製"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_blue"
+            android:text="錄製"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/play_red3"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            app:srcCompat="@drawable/play_icon_red" />
 
         <Button
             android:id="@+id/btnPlay3"
-            android:text="回放"
-            android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp" />
+            android:layout_margin="10dp"
+            android:background="@drawable/btn_radius_pink"
+            android:text="回放"
+            android:textColor="@color/book_list_authors"
+            android:textSize="20sp" />
     </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <Button
             android:id="@+id/btnNextStep"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
+            android:background="@drawable/btn_radius_steelblue"
             android:text="下一步"
+            android:textColor="@color/White"
             android:textSize="20sp" />
+
     </RelativeLayout>
+
 </LinearLayout>

@@ -1,69 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity_note">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0">
-        <ListView
-            android:id="@+id/note"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" />
-    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/note"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/menu"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnCreateNote"
+        android:src="@drawable/ic_create_white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="20dp"
+        android:layout_gravity="bottom|right"
         android:layout_marginRight="20dp"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_create_white"
-            app:fab_label="新增"
-            app:fab_size="mini"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/menu_item2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_delete_white"
-            app:fab_label="刪除"
-            app:fab_size="mini"
-            app:layout_constraintBottom_toTopOf="@+id/menu_item1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </com.github.clans.fab.FloatingActionMenu>
-
-</android.support.constraint.ConstraintLayout>
+        android:layout_marginBottom="20dp">
+    </android.support.design.widget.FloatingActionButton>
+</FrameLayout>

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity_note"></activity>
+        <activity android:name=".MainActivity_signUpUnsuccess" />
+        <activity android:name=".MainActivity_note" />
         <activity android:name=".MainActivity_loginUnsucccess" />
         <activity android:name=".MainActivity_loginSuccess" />
+        <activity android:name=".MainActivity_createNote" />
 
         <meta-data
             android:name="com.google.android.actions"
@@ -29,7 +32,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
