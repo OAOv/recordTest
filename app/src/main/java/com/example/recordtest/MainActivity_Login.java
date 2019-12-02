@@ -344,8 +344,8 @@ public class MainActivity_Login extends AppCompatActivity {
                                 /*bundleOfSaveAccount = new Bundle();
                                 bundleOfSaveAccount.putString("account", str_account);
                                 Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginSuccess.class);
-                                intent.putExtras(bundleOfSaveAccount);
-                                startActivity(intent);*/
+                                intent.putExtras(bundleOfSaveAccount);*/
+                                startActivity(intent);
                             }
                         }
 

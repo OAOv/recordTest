@@ -37,6 +37,15 @@
         android:textSize="14sp" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:shadowColor="#FFFFFF"
+        android:text="若出現null或失敗，可回首頁更換句子"
+        android:textAllCaps="false"
+        android:textColor="#DA314F"
+        android:textSize="14sp" />
+
+    <TextView
         android:id="@+id/randomString"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
