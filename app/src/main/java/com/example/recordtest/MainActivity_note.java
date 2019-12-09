@@ -140,7 +140,7 @@ public class MainActivity_note extends AppCompatActivity {
         protected void onPostExecute(String result) {
             try {
                 JSONArray array = new JSONArray(result);
-                for(int i = array.length() - 1; i > 0; i--) {
+                for(int i = array.length() - 1; i >= 0; i--) {
                     JSONObject jsonObject = array.getJSONObject(i);
                     int index = jsonObject.getInt("Note_Index");
                     String account = jsonObject.getString("Account");
