@@ -56,7 +56,6 @@ public class MainActivity_Login extends AppCompatActivity {
 
     private  AudioRecord mAudioRecord;
     private boolean isRecording = false;
-    private static final int audioBPP = 16;
     private static final int audioSource = MediaRecorder.AudioSource.MIC;
     private static final int audioRate = 44100;
     private static final int audioChannel = AudioFormat.CHANNEL_IN_MONO;
@@ -184,7 +183,7 @@ public class MainActivity_Login extends AppCompatActivity {
         long longSampleRate = audioRate;
         int channels = ((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
                 : 2);
-        long byteRate = audioBPP * audioRate * channels / 8;
+        long byteRate = 16 * audioRate * channels / 8;
 
         byte[] data = new byte[bufferSize];
 
@@ -247,10 +246,9 @@ public class MainActivity_Login extends AppCompatActivity {
         header[29] = (byte) ((byteRate >> 8) & 0xff);
         header[30] = (byte) ((byteRate >> 16) & 0xff);
         header[31] = (byte) ((byteRate >> 24) & 0xff);
-        header[32] = (byte) (((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
-                : 2) * 16 / 8); // block align
+        header[32] = (byte) (((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2) * 16 / 8); // block align
         header[33] = 0;
-        header[34] = audioBPP; // bits per sample
+        header[34] = 16; // bits per sample
         header[35] = 0;
         header[36] = 'd';
         header[37] = 'a';
