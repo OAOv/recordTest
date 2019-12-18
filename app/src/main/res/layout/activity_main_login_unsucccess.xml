@@ -28,7 +28,7 @@
             android:layout_width="180dp"
             android:layout_height="40dp"
             android:layout_margin="10dp"
-            android:background="@drawable/btn_radius_green"
+            android:background="@drawable/btn_radius_pink"
             android:text="回前頁"
             android:textColor="#666666" />
 

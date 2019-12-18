@@ -181,8 +181,7 @@ public class MainActivity_Login extends AppCompatActivity {
         long totalAudioLen = 0;
         long totalDataLen = totalAudioLen + 36;
         long longSampleRate = audioRate;
-        int channels = ((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1
-                : 2);
+        int channels = ((audioChannel == AudioFormat.CHANNEL_IN_MONO) ? 1 : 2);
         long byteRate = 16 * audioRate * channels / 8;
 
         byte[] data = new byte[bufferSize];

@@ -29,7 +29,7 @@
             android:layout_height="40dp"
             android:layout_margin="10dp"
             android:background="@drawable/btn_radius_green"
-            android:text="Button"
+            android:text="前往記事本"
             android:textColor="#666666" />
 
 
