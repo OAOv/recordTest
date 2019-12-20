@@ -337,7 +337,7 @@ public class MainActivity_Login extends AppCompatActivity {
                             }
                             else {
                                 Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginUnsucccess.class);
-                                ///測試筆記
+                                //測試筆記
                                 /*bundleOfSaveAccount = new Bundle();
                                 bundleOfSaveAccount.putString("account", str_account);
                                 Intent intent = new Intent(MainActivity_Login.this, MainActivity_loginSuccess.class);

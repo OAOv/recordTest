@@ -1,7 +1,12 @@
 package com.example.recordtest;
 
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class MainActivity_createNote extends AppCompatActivity {
 
@@ -32,7 +38,9 @@ public class MainActivity_createNote extends AppCompatActivity {
     private String account, title, description;
     private int note_index;
     private boolean isExist;
-
+    FloatingActionButton btnRecordTitle, btnRecordDescription;
+    private static final int RECOGNITION_REQUEST_CODE_TITLE = 123;
+    private static final int RECOGNITION_REQUEST_CODE_DESCRIPTION = 456;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,8 @@ public class MainActivity_createNote extends AppCompatActivity {
 
         btnCreate = (Button)findViewById(R.id.btnCreate);
         btnDelete = (Button)findViewById(R.id.btnDelete);
+        btnRecordTitle = (FloatingActionButton)findViewById(R.id.btnRecordTitle);
+        btnRecordDescription = (FloatingActionButton)findViewById(R.id.btnRecordDescription);
         etTitle = (EditText)findViewById(R.id.noteTitle);
         etDescription = (EditText)findViewById(R.id.noteDescription);
         bundle = getIntent().getExtras();
@@ -112,7 +122,69 @@ public class MainActivity_createNote extends AppCompatActivity {
                 }
             }
         });
+
+        /////////////////////////
+        //語音轉文字
+        btnRecordTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent titleIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                titleIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                titleIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "請說"); //介面文字
+                try{
+                    startActivityForResult(titleIntent, RECOGNITION_REQUEST_CODE_TITLE);
+                }catch (ActivityNotFoundException a){
+                    Toast.makeText(getApplicationContext(),"Intent problem", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnRecordDescription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent titleIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                titleIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                titleIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "請說"); //介面文字
+                try{
+                    startActivityForResult(titleIntent, RECOGNITION_REQUEST_CODE_DESCRIPTION);
+                }catch (ActivityNotFoundException a){
+                    Toast.makeText(getApplicationContext(),"Intent problem", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        /////////////////////////
     }
+
+    ///////////////////////
+    //語音轉文字輸出
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String firstMatched = "";
+
+        Log.e(TAG, "resultCode: " + resultCode);
+
+        if(requestCode == RECOGNITION_REQUEST_CODE_TITLE ) {
+            if (resultCode == RESULT_OK) {
+                ArrayList<String> resultList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                firstMatched = (String) resultList.get(0);//通常我們只取第一個來用
+            }
+            if(!firstMatched.equals(""))
+                etTitle.setText(firstMatched);
+        }
+        else if(requestCode == RECOGNITION_REQUEST_CODE_DESCRIPTION) {
+            if (resultCode == RESULT_OK) {
+                ArrayList<String> resultList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                firstMatched = (String) resultList.get(0);//通常我們只取第一個來用
+            }
+            if(!firstMatched.equals("")) {
+                if(!etDescription.getText().toString().equals(""))
+                    firstMatched = etDescription.getText() + "\r\n" + firstMatched;
+                etDescription.setText(firstMatched);
+            }
+        }
+    }
+    ///////////////////////
 
     ///////////////////////
     private void createNote(String account, String title, String description, Boolean isExist, int index_note) {

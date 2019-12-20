@@ -7,25 +7,57 @@
     tools:context=".MainActivity_createNote"
     android:orientation="vertical" >
 
-    <EditText
-        android:id="@+id/noteTitle"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="請輸入標題"
-        android:padding="10dp"
-        android:textSize="25dp"
-        android:inputType="text"/>
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/noteTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="請輸入標題"
+            android:padding="10dp"
+            android:textSize="25dp"
+            android:inputType="text"/>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRecordTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="5dp"
+            app:fabSize="mini"
+            android:src="@drawable/ic_mic_white" />
+    </LinearLayout>
 
-    <EditText
-        android:id="@+id/noteDescription"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:gravity="top"
-        android:hint="請輸入內容"
-        android:inputType="textMultiLine"
-        android:padding="10dp"
-        android:textSize="25dp" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/noteDescription"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="top"
+            android:hint="請輸入內容"
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:textSize="25dp" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnRecordDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ic_mic_white"
+            app:fabSize="mini" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -33,7 +33,7 @@ public class MainActivity_note extends AppCompatActivity {
     private ArrayList<JsonDataList> arrayList;
     private ListAdapter listAdapter;
     private OnClickInterface onClickInterface;
-    FloatingActionButton btnCreateNote, btnDeleteNote;
+    FloatingActionButton btnCreateNote;
     Bundle bundle;
 
     @Override
