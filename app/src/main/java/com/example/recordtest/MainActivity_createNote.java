@@ -167,7 +167,7 @@ public class MainActivity_createNote extends AppCompatActivity {
         if(requestCode == RECOGNITION_REQUEST_CODE_TITLE ) {
             if (resultCode == RESULT_OK) {
                 ArrayList<String> resultList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                firstMatched = (String) resultList.get(0);//通常我們只取第一個來用
+                firstMatched = (String) resultList.get(0);
             }
             if(!firstMatched.equals(""))
                 etTitle.setText(firstMatched);
@@ -175,7 +175,7 @@ public class MainActivity_createNote extends AppCompatActivity {
         else if(requestCode == RECOGNITION_REQUEST_CODE_DESCRIPTION) {
             if (resultCode == RESULT_OK) {
                 ArrayList<String> resultList = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                firstMatched = (String) resultList.get(0);//通常我們只取第一個來用
+                firstMatched = (String) resultList.get(0);
             }
             if(!firstMatched.equals("")) {
                 if(!etDescription.getText().toString().equals(""))
